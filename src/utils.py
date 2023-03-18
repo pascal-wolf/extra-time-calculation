@@ -19,10 +19,10 @@ def create_text_color(predicted_class, prediction_proba):
 
 
 def get_number_of_files(path):
-    classes = list(config["Training"]["classes"])
-
+    classes = config["Training"]["classes"].split(",")
+    print(classes)
     for i in range(len(classes)):
-        path += "/" + str(i) + "/"
-        files = [f for f in listdir(path) if isfile(join(path, f))]
+        adapted_path = path + str(i) + "/"
+        files = [f for f in listdir(adapted_path) if isfile(join(adapted_path, f))]
 
     return len(files)
