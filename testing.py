@@ -12,7 +12,7 @@ config = configparser.ConfigParser()
 config.read("config.ini")
 
 logging.info("Loading Model ...")
-model = keras.models.load_model("./models/classification_v2")
+model = keras.models.load_model("./trained_models/classification_v2")
 logging.info("Model loaded")
 
 path = "./data/test_data/Test.mp4"
