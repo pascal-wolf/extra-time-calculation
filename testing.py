@@ -12,9 +12,9 @@ config = configparser.ConfigParser()
 config.read("config.ini")
 
 logging.info("Loading Model ...")
-model = keras.models.load_model("./trained_models/classification_v2")
+model = keras.models.load_model("./trained_models/classification_v3")
 logging.info("Model loaded")
-
+ 
 path = "./data/test_data/Test.mp4"
 time_stop_counter = 0
 cap = cv2.VideoCapture(path)
@@ -49,7 +49,7 @@ while cap.isOpened():
     fontScale = 1
     text, color = create_text_color(predicted_class, prediction_proba)
     frame = cv2.putText(
-        frame, text, (1220, 120), font, fontScale, color, 1, cv2.LINE_AA
+        frame, text, (1220, 120), font, fontScale, color, 2, cv2.LINE_AA
     )
     extra_time = calculate_extra_time(time_stop_counter, fps)
     frame = cv2.putText(

@@ -85,4 +85,4 @@ history = model.fit(
     steps_per_epoch=NUMBER_OF_TRAINING_IMAGES // batch_size,
     validation_data=validation_generator,
 )
-model.save("./models/classification_v2")
+model.save("./models/classification_v3")
