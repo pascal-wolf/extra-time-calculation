@@ -1,14 +1,12 @@
-import numpy as np
+import configparser
+import logging
+
 import cv2
-import os
-from ultralyticsplus import YOLO, render_result
-from tensorflow import keras
+import mlflow.keras
+import numpy as np
+
 from src.preprocess import preprocess_single_frame
 from src.utils import create_text_color, calculate_extra_time
-import logging
-import configparser
-import mlflow.keras
-
 
 config = configparser.ConfigParser()
 config.read("config.ini")

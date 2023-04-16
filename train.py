@@ -1,11 +1,8 @@
-from tensorflow.keras import models, layers
-from keras.preprocessing.image import ImageDataGenerator
-from tqdm import tqdm
-from tensorflow.keras import optimizers
-from tensorflow.keras.applications import EfficientNetB1
-import tensorflow as tf
-from keras import backend as K
 import configparser
+
+import tensorflow as tf
+from keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras import models, layers
 
 config = configparser.ConfigParser()
 config.read("config.ini")

@@ -1,6 +1,7 @@
+import configparser
+import logging
 from os import listdir
 from os.path import isfile, join
-import configparser
 
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -26,7 +27,7 @@ def calculate_extra_time(time_stop_counter, fps):
 
 def get_number_of_files(path):
     classes = config["Training"]["classes"].split(",")
-    print(classes)
+    logging.info(classes)
     for i in range(len(classes)):
         adapted_path = path + str(i) + "/"
         files = [f for f in listdir(adapted_path) if isfile(join(adapted_path, f))]

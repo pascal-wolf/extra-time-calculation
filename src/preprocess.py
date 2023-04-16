@@ -1,7 +1,7 @@
-import numpy as np
-from tensorflow.keras.utils import img_to_array
-from keras.preprocessing.image import ImageDataGenerator
 import configparser
+
+from keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.utils import img_to_array
 
 config = configparser.ConfigParser()
 config.read("config.ini")

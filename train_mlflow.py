@@ -1,43 +1,22 @@
-import numpy as np
-from urllib.parse import urlparse
-import mlflow
-from mlflow import keras
-from src.model import create_model
-import logging
-from src.preprocess import create_generators
-from src.utils import get_number_of_files
+import argparse
 import configparser
+import logging
+from urllib.parse import urlparse
+
+import mlflow
+import numpy as np
 import pandas as pd
+from mlflow import keras
 from sklearn.metrics import confusion_matrix
 
-config = configparser.ConfigParser()
-config.read("config.ini")
+from src.analysis import analyse_results
+from src.model import create_model
+from src.preprocess import create_generators
+from src.utils import get_number_of_files
 
 
-height = int(config["DEFAULT"]["image_height"])
-width = int(config["DEFAULT"]["image_width"])
-threshold = float(config["DEFAULT"]["threshold"])
-input_shape = (
-    height,
-    width,
-    1,  # We are using grayscale - todo: add to config
-)
-batch_size = int(config["Training"]["batch_size"])
-epochs = int(config["Training"]["epochs"])
-
-train_images_path = str(config["Training"]["train_images_path"])
-val_images_path = str(config["Training"]["val_images_path"])
-
-number_of_training_images = get_number_of_files(train_images_path)
-number_of_validation_images = get_number_of_files(val_images_path)
-
-classes = config["Training"]["classes"].split(",")
-number_of_classes = len(classes)
-
-
-if __name__ == "__main__":
+def main(args):
     keras.autolog()
-
     train_generator, validation_generator = create_generators()
 
     # Here Hyperparameter
@@ -47,7 +26,7 @@ if __name__ == "__main__":
 
     with mlflow.start_run():
         model = create_model(input_shape)
-        print("Model created ...")
+        logging.info("Model created ...")
         history = model.fit(
             train_generator,
             epochs=epochs,
@@ -70,10 +49,12 @@ if __name__ == "__main__":
                 "Path": validation_generator.filenames,
             }
         )
+
         cm = confusion_matrix(
             result_df["Label"], result_df["Prediction"], labels=[0, 1]
         )
-        print(cm)
+
+        logging.info(cm)
         # Log Hyperparameter here
         # mlflow.log_param("alpha", alpha)
 
@@ -85,3 +66,52 @@ if __name__ == "__main__":
             keras.log_model(model, "model", registered_model_name="CNNClassification")
         else:
             keras.log_model(model, "model")
+
+        # If analyze mode is activated - feature importance for randomly wrong classified frame
+        if args.debug:
+            analyse_results(result_df)
+
+        logging.info("Program finished.")
+
+
+if __name__ == "__main__":
+
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=str(config["LOGGING"]["log_level"]))
+    logging.info("Program started...")
+
+    height = int(config["DEFAULT"]["image_height"])
+    width = int(config["DEFAULT"]["image_width"])
+    dimensions = int(config["DEFAULT"]["image_dimensions"])                  # 1 -> grayscale; 3 -> rgb
+    threshold = float(config["DEFAULT"]["threshold"])
+
+    input_shape = (
+        height,
+        width,
+        dimensions
+    )
+    batch_size = int(config["Training"]["batch_size"])
+    epochs = int(config["Training"]["epochs"])
+
+    train_images_path = str(config["Training"]["train_images_path"])
+    val_images_path = str(config["Training"]["val_images_path"])
+
+    number_of_training_images = get_number_of_files(train_images_path)
+    number_of_validation_images = get_number_of_files(val_images_path)
+
+    classes = config["Training"]["classes"].split(",")
+    number_of_classes = len(classes)
+
+    parser = argparse.ArgumentParser(description="Additional Time Prediction")
+    parser.add_argument(
+        "--debug",
+        type=bool,
+        help="debug to specify, if wrongly classified images should be analyzed or not. Options (True | False)",
+        choices=[True, False],
+        default=False
+    )
+    args = parser.parse_args()
+
+    main(args)
