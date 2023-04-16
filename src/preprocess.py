@@ -50,6 +50,7 @@ def create_generators():
         batch_size=batch_size,
         # Since we use categorical_crossentropy loss, we need categorical labels
         class_mode="binary",
+        color_mode="grayscale",
     )
 
     test_datagen = ImageDataGenerator(rescale=1.0 / 255)
@@ -58,6 +59,7 @@ def create_generators():
         target_size=(height, width),
         batch_size=batch_size,
         class_mode="binary",
+        color_mode="grayscale",
     )
 
     return train_generator, validation_generator

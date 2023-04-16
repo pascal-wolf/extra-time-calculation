@@ -7,6 +7,8 @@ import logging
 from src.preprocess import create_generators
 from src.utils import get_number_of_files
 import configparser
+import pandas as pd
+from sklearn.metrics import confusion_matrix
 
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -18,7 +20,7 @@ threshold = float(config["DEFAULT"]["threshold"])
 input_shape = (
     height,
     width,
-    3,
+    1,  # We are using grayscale - todo: add to config
 )
 batch_size = int(config["Training"]["batch_size"])
 epochs = int(config["Training"]["epochs"])
@@ -44,25 +46,34 @@ if __name__ == "__main__":
     # l1_ratio = float(sys.argv[2]) if len(sys.argv) > 2 else 0.5
 
     with mlflow.start_run():
-
         model = create_model(input_shape)
+        print("Model created ...")
         history = model.fit(
             train_generator,
             epochs=epochs,
-            steps_per_epoch=number_of_training_images // batch_size,
+            # steps_per_epoch=number_of_training_images // batch_size,
             validation_data=validation_generator,
+            use_multiprocessing=False,
+            workers=1,
         )
-
+        # mlflow.log_figure(cm.figure_, 'test_confusion_matrix.png')
+        logging.info("Predicting Validation data")
         predictions_proba = model.predict(validation_generator).flatten()
         predictions = np.where(predictions_proba < threshold, 0, 1).flatten()
         y_true = validation_generator.classes.flatten()
 
-        # Evaluate on Validation data
-        scores = model.evaluate(validation_generator, verbose=0)
-        for i, metric_name in enumerate(model.metrics_names[1:]):
-            print("%s%s: %.2f%%" % ("evaluate ", metric_name, scores[i]))
-            mlflow.log_metric(metric_name, scores[i])
-
+        result_df = pd.DataFrame(
+            {
+                "Prediction": predictions,
+                "Probability": predictions_proba,
+                "Label": y_true,
+                "Path": validation_generator.filenames,
+            }
+        )
+        cm = confusion_matrix(
+            result_df["Label"], result_df["Prediction"], labels=[0, 1]
+        )
+        print(cm)
         # Log Hyperparameter here
         # mlflow.log_param("alpha", alpha)
 
