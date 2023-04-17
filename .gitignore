@@ -2,6 +2,7 @@
 /trained_models
 __pycache__/
 /hauptseminar_310
+/timecalc_env
 .vscode/
 .DS_Store
 /mlruns
