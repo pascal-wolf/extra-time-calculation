@@ -2,12 +2,13 @@ import numpy as np
 from urllib.parse import urlparse
 import mlflow
 from mlflow import keras
-from src.model import create_model
+from src.model import create_model, create_convnext_model
 import logging
 from src.preprocess import create_generators
 from src.utils import get_number_of_files
 import configparser
 import pandas as pd
+import tensorflow as tf
 from sklearn.metrics import confusion_matrix
 
 config = configparser.ConfigParser()
@@ -20,7 +21,7 @@ threshold = float(config["DEFAULT"]["threshold"])
 input_shape = (
     height,
     width,
-    1,  # We are using grayscale - todo: add to config
+    3,  # We are using grayscale - todo: add to config
 )
 batch_size = int(config["Training"]["batch_size"])
 epochs = int(config["Training"]["epochs"])
@@ -46,14 +47,15 @@ if __name__ == "__main__":
     # l1_ratio = float(sys.argv[2]) if len(sys.argv) > 2 else 0.5
 
     with mlflow.start_run():
-        model = create_model(input_shape)
+        model = create_convnext_model(input_shape)
         print("Model created ...")
+        callback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=3)
         history = model.fit(
             train_generator,
             epochs=epochs,
-            # steps_per_epoch=number_of_training_images // batch_size,
             validation_data=validation_generator,
             use_multiprocessing=False,
+            callbacks=[callback],
             workers=1,
         )
         # mlflow.log_figure(cm.figure_, 'test_confusion_matrix.png')

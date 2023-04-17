@@ -1,8 +1,12 @@
+from tensorflow.keras.applications.convnext import ConvNeXtTiny
+from tensorflow.keras.applications import EfficientNetB1
 from tensorflow.keras import models, layers
 from keras.preprocessing.image import ImageDataGenerator
 from tqdm import tqdm
 from tensorflow.keras import optimizers
-from tensorflow.keras.applications import EfficientNetB1
+from tensorflow.keras.optimizers.legacy import Adam
+
+
 import tensorflow as tf
 from keras import backend as K
 
@@ -26,6 +30,22 @@ def create_model(input_shape):
     model.compile(
         loss="binary_crossentropy",
         optimizer="adam",
+        metrics=["accuracy", tf.keras.metrics.Precision(), tf.keras.metrics.Recall()],
+        steps_per_execution=1,
+    )
+    return model
+
+
+def create_convnext_model(input_shape):
+    model = ConvNeXtTiny(
+        include_top=True,
+        weights=None,
+        classes=2,
+    )
+
+    model.compile(
+        loss="categorical_crossentropy",
+        optimizer=Adam(),
         metrics=["accuracy", tf.keras.metrics.Precision(), tf.keras.metrics.Recall()],
         steps_per_execution=1,
     )

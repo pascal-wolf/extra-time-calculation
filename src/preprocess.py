@@ -47,19 +47,19 @@ def create_generators():
         train_images_path,
         # All images will be resized to target height and width.
         target_size=(height, width),
+        class_mode="categorical",
         batch_size=batch_size,
         # Since we use categorical_crossentropy loss, we need categorical labels
-        class_mode="binary",
-        color_mode="grayscale",
+        # color_mode="grayscale",
     )
 
     test_datagen = ImageDataGenerator(rescale=1.0 / 255)
     validation_generator = test_datagen.flow_from_directory(
         val_images_path,
+        class_mode="categorical",
         target_size=(height, width),
         batch_size=batch_size,
-        class_mode="binary",
-        color_mode="grayscale",
+        # color_mode="grayscale",
     )
 
     return train_generator, validation_generator

@@ -13,7 +13,7 @@ import mlflow.keras
 config = configparser.ConfigParser()
 config.read("config.ini")
 logging.info("Loading Model ...")
-logged_model = "runs:/7a52a77f109c4956be177ba42b30b672/model"
+logged_model = "runs:/b6100c5dc3ee49518fce4c133c528c41/model"
 model = mlflow.keras.load_model(logged_model)
 logging.info("Model loaded")
 
