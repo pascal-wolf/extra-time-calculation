@@ -1,3 +1,7 @@
 /data
 /trained_models
 __pycache__/
+/hauptseminar_310
+.vscode/
+.DS_Store
+/mlruns
