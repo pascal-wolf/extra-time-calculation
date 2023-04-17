@@ -26,6 +26,8 @@ def main(args):
 
     with mlflow.start_run():
         model = create_model(input_shape)
+
+        logging.info(model.summary())
         logging.info("Model created ...")
         history = model.fit(
             train_generator,
@@ -69,7 +71,7 @@ def main(args):
 
         # If analyze mode is activated - feature importance for randomly wrong classified frame
         if args.debug:
-            analyse_results(result_df)
+            analyse_results(model, result_df)
 
         logging.info("Program finished.")
 
