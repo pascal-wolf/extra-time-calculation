@@ -10,7 +10,7 @@ config.read("config.ini")
 def create_text_color(predicted_class, prediction_proba):
     if predicted_class == 1:
         text = "Out game "
-        color = (220, 20, 60)
+        color = (60, 20, 220)
     else:
         text = "In game "
         color = (0, 100, 0)
@@ -26,7 +26,7 @@ def calculate_extra_time(time_stop_counter, fps):
 
 
 def get_number_of_files(path):
-    classes = config["Training"]["classes"].split(",")
+    classes = config["TRAINING"]["classes"].split(",")
     logging.info(classes)
     for i in range(len(classes)):
         adapted_path = path + str(i) + "/"

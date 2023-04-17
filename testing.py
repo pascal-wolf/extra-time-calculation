@@ -11,11 +11,11 @@ from src.utils import create_text_color, calculate_extra_time
 config = configparser.ConfigParser()
 config.read("config.ini")
 logging.info("Loading Model ...")
-logged_model = "runs:/7a52a77f109c4956be177ba42b30b672/model"
+logged_model = "runs:/b6100c5dc3ee49518fce4c133c528c41/model"
 model = mlflow.keras.load_model(logged_model)
 logging.info("Model loaded")
 
-path = "./data/test_data/Test.mp4"
+path = "./data/test_data/Test_Leipzig_1.mp4"
 time_stop_counter = 0
 cap = cv2.VideoCapture(path)
 fps = cap.get(cv2.CAP_PROP_FPS)

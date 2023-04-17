@@ -1,4 +1,12 @@
 import argparse
+import numpy as np
+from urllib.parse import urlparse
+import mlflow
+from mlflow import keras
+from src.model import create_model, create_convnext_model
+import logging
+from src.preprocess import create_generators
+from src.utils import get_number_of_files
 import configparser
 import logging
 from urllib.parse import urlparse
@@ -7,15 +15,33 @@ import mlflow
 import numpy as np
 import pandas as pd
 from mlflow import keras
+import tensorflow as tf
 from sklearn.metrics import confusion_matrix
 
 from src.analysis import analyse_results
-from src.model import create_model
 from src.preprocess import create_generators
 from src.utils import get_number_of_files
 
 
 def main(args):
+    height = int(config["DEFAULT"]["image_height"])
+    width = int(config["DEFAULT"]["image_width"])
+    dimensions = int(config["DEFAULT"]["image_dimensions"])  # 1 -> grayscale; 3 -> rgb
+    threshold = float(config["DEFAULT"]["threshold"])
+
+    input_shape = (height, width, dimensions)
+    batch_size = int(config["TRAINING"]["batch_size"])
+    epochs = int(config["TRAINING"]["epochs"])
+
+    train_images_path = str(config["TRAINING"]["train_images_path"])
+    val_images_path = str(config["TRAINING"]["val_images_path"])
+
+    number_of_training_images = get_number_of_files(train_images_path)
+    number_of_validation_images = get_number_of_files(val_images_path)
+
+    classes = config["TRAINING"]["classes"].split(",")
+    number_of_classes = len(classes)
+
     keras.autolog()
     train_generator, validation_generator = create_generators()
 
@@ -26,15 +52,15 @@ def main(args):
 
     with mlflow.start_run():
         model = create_model(input_shape)
-
-        logging.info(model.summary())
         logging.info("Model created ...")
+
+        callback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=3)
         history = model.fit(
             train_generator,
             epochs=epochs,
-            # steps_per_epoch=number_of_training_images // batch_size,
             validation_data=validation_generator,
             use_multiprocessing=False,
+            callbacks=[callback],
             workers=1,
         )
         # mlflow.log_figure(cm.figure_, 'test_confusion_matrix.png')
@@ -77,34 +103,13 @@ def main(args):
 
 
 if __name__ == "__main__":
-
     config = configparser.ConfigParser()
     config.read("config.ini")
 
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=str(config["LOGGING"]["log_level"]))
-    logging.info("Program started...")
-
-    height = int(config["DEFAULT"]["image_height"])
-    width = int(config["DEFAULT"]["image_width"])
-    dimensions = int(config["DEFAULT"]["image_dimensions"])                  # 1 -> grayscale; 3 -> rgb
-    threshold = float(config["DEFAULT"]["threshold"])
-
-    input_shape = (
-        height,
-        width,
-        dimensions
+    logging.basicConfig(
+        format="%(levelname)s: %(message)s", level=str(config["LOGGING"]["log_level"])
     )
-    batch_size = int(config["Training"]["batch_size"])
-    epochs = int(config["Training"]["epochs"])
-
-    train_images_path = str(config["Training"]["train_images_path"])
-    val_images_path = str(config["Training"]["val_images_path"])
-
-    number_of_training_images = get_number_of_files(train_images_path)
-    number_of_validation_images = get_number_of_files(val_images_path)
-
-    classes = config["Training"]["classes"].split(",")
-    number_of_classes = len(classes)
+    logging.info("Program started...")
 
     parser = argparse.ArgumentParser(description="Additional Time Prediction")
     parser.add_argument(
@@ -112,7 +117,7 @@ if __name__ == "__main__":
         type=bool,
         help="debug to specify, if wrongly classified images should be analyzed or not. Options (True | False)",
         choices=[True, False],
-        default=False
+        default=False,
     )
     args = parser.parse_args()
 
