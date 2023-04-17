@@ -1,12 +1,4 @@
 import argparse
-import numpy as np
-from urllib.parse import urlparse
-import mlflow
-from mlflow import keras
-from src.model import create_model, create_convnext_model
-import logging
-from src.preprocess import create_generators
-from src.utils import get_number_of_files
 import configparser
 import logging
 from urllib.parse import urlparse
@@ -14,11 +6,12 @@ from urllib.parse import urlparse
 import mlflow
 import numpy as np
 import pandas as pd
-from mlflow import keras
 import tensorflow as tf
+from mlflow import keras
 from sklearn.metrics import confusion_matrix
 
 from src.analysis import analyse_results
+from src.model import create_model
 from src.preprocess import create_generators
 from src.utils import get_number_of_files
 

@@ -1,7 +1,4 @@
 from tensorflow.keras.applications.convnext import ConvNeXtTiny
-from tensorflow.keras.applications import EfficientNetB1
-from tensorflow.keras import models, layers
-from keras.preprocessing.image import ImageDataGenerator
 from tqdm import tqdm
 from tensorflow.keras import optimizers
 from tensorflow.keras.optimizers.legacy import Adam
