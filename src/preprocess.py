@@ -1,10 +1,7 @@
-import configparser
-
 from keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.utils import img_to_array
 
-config = configparser.ConfigParser()
-config.read("config.ini")
+from src.settings import Settings
 
 
 def preprocess_single_frame(image):
@@ -25,12 +22,6 @@ def preprocess_single_frame(image):
 
 
 def create_generators():
-    train_images_path = str(config["TRAINING"]["train_images_path"])
-    val_images_path = str(config["TRAINING"]["val_images_path"])
-    height = int(config["DEFAULT"]["image_height"])
-    width = int(config["DEFAULT"]["image_width"])
-    batch_size = int(config["TRAINING"]["batch_size"])
-    dimension = int(config["DEFAULT"]["image_dimensions"])
 
     train_datagen = ImageDataGenerator(
         rescale=1.0 / 255,
@@ -45,22 +36,22 @@ def create_generators():
 
     train_generator = train_datagen.flow_from_directory(
         # This is the target directory
-        train_images_path,
+        directory=Settings.train_images_path,
         # All images will be resized to target height and width.
-        target_size=(height, width),
+        target_size=(Settings.image_height, Settings.image_width),
         class_mode="binary",
-        batch_size=batch_size,
+        batch_size=Settings.batch_size,
         # Since we use categorical_crossentropy loss, we need categorical labels
-        color_mode="grayscale" if dimension == 1 else "rgb",
+        color_mode="grayscale" if Settings.image_dimensions == 1 else "rgb",
     )
 
     test_datagen = ImageDataGenerator(rescale=1.0 / 255)
     validation_generator = test_datagen.flow_from_directory(
-        val_images_path,
+        directory=Settings.val_images_path,
         class_mode="binary",
-        target_size=(height, width),
-        batch_size=batch_size,
-        color_mode="grayscale" if dimension == 1 else "rgb",
+        target_size=(Settings.image_height, Settings.image_width),
+        batch_size=Settings.batch_size,
+        color_mode="grayscale" if Settings.image_dimensions == 1 else "rgb",
     )
 
     return train_generator, validation_generator

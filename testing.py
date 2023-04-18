@@ -1,4 +1,3 @@
-import configparser
 import logging
 
 import cv2
@@ -6,10 +5,10 @@ import mlflow.keras
 import numpy as np
 
 from src.preprocess import preprocess_single_frame
+from src.settings import Settings
 from src.utils import create_text_color, calculate_extra_time
 
-config = configparser.ConfigParser()
-config.read("config.ini")
+
 logging.info("Loading Model ...")
 logged_model = "runs:/b6100c5dc3ee49518fce4c133c528c41/model"
 model = mlflow.keras.load_model(logged_model)
@@ -32,18 +31,15 @@ while cap.isOpened():
     frame_resized = cv2.resize(
         frame,
         dsize=(
-            int(config["DEFAULT"]["image_height"]),
-            int(config["DEFAULT"]["image_width"]),
+            Settings.image_height,
+            Settings.image_width,
         ),
         interpolation=cv2.INTER_NEAREST,
     )
     frame_preprocessed = preprocess_single_frame(frame_resized)
-    # print(frame_preprocessed)
     prediction_proba = model.predict(frame_preprocessed, verbose=0)[0][0]
-    # print(prediction_proba)
-    predicted_class = np.where(
-        prediction_proba < float(config["DEFAULT"]["threshold"]), 0, 1
-    )
+    predicted_class = np.where(prediction_proba < Settings.threshold, 0, 1)
+
     if predicted_class == 1:
         time_stop_counter += 1
     # Text on Image
@@ -65,10 +61,8 @@ while cap.isOpened():
         cv2.LINE_AA,
     )
 
-    if bool(config["DEFAULT"]["verbose"]):
-        logging.info(
-            f"Model predicted class {predicted_class} ({round(prediction_proba,2)})"
-        )
+    if Settings.verbose:
+        logging.info(f"Model predicted class {predicted_class} ({round(prediction_proba,2)})")
 
     cv2.imshow("frame", original_frame)
 

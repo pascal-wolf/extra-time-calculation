@@ -1,12 +1,10 @@
-import configparser
 import os
 import random
 
 import matplotlib.pylab as plt
 import tensorflow as tf
 
-config = configparser.ConfigParser()
-config.read("config.ini")
+from src.settings import Settings
 
 
 def interpolate_images(baseline, image, alphas):
@@ -21,13 +19,13 @@ def interpolate_images(baseline, image, alphas):
 def read_image(file_name):
     image = tf.io.read_file(file_name)
     image = tf.io.decode_jpeg(
-        image, channels=int(config["DEFAULT"]["image_dimensions"])
+        image, channels=Settings.image_dimensions
     )
     image = tf.image.convert_image_dtype(image, tf.float32)
     image = tf.image.resize_with_pad(
-        image,
-        target_height=int(config["DEFAULT"]["image_height"]),
-        target_width=int(config["DEFAULT"]["image_width"]),
+        image=image,
+        target_height=Settings.image_height,
+        target_width=Settings.image_width
     )
     return image
 
@@ -51,7 +49,9 @@ def integral_approximation(gradients):
 def one_batch(model, baseline, image, alpha_batch, target_class_idx):
     # Generate interpolated inputs between baseline and input.
     interpolated_path_input_batch = interpolate_images(
-        baseline=baseline, image=image, alphas=alpha_batch
+        baseline=baseline,
+        image=image,
+        alphas=alpha_batch
     )
 
     # Compute gradients between model outputs and interpolated inputs.
@@ -63,9 +63,7 @@ def one_batch(model, baseline, image, alpha_batch, target_class_idx):
     return gradient_batch
 
 
-def integrated_gradients(
-    model, baseline, image, target_class_idx, m_steps=50, batch_size=32
-):
+def integrated_gradients(model, baseline, image, target_class_idx, m_steps=50, batch_size=32):
     # Generate alphas.
     alphas = tf.linspace(start=0.0, stop=1.0, num=m_steps + 1)
 
@@ -95,9 +93,7 @@ def integrated_gradients(
     return integrated_gradients
 
 
-def plot_img_attributions(
-    model, baseline, image, target_class_idx, m_steps=50, cmap=None, overlay_alpha=0.4
-):
+def plot_img_attributions(model, baseline, image, target_class_idx, m_steps=50, cmap=None, overlay_alpha=0.4):
     attributions = integrated_gradients(
         model=model,
         baseline=baseline,
@@ -138,10 +134,10 @@ def analyse_results(model, result_df):
     wrong_list_idx = result_df[result_df["Prediction"] != result_df["Label"]].index
     frame_idx = random.choice(wrong_list_idx)
     frame_path = result_df.iloc[[frame_idx]]["Path"].item()
-    path = os.path.join(str(config["TRAINING"]["val_images_path"]), frame_path)
+    path = os.path.join(Settings.val_images_path, frame_path)
 
     img_tensors = read_image(file_name=path)
-    baseline = tf.zeros(shape=(128, 128, 1))
+    baseline = tf.zeros(shape=(Settings.image_height, Settings.image_width, Settings.image_dimensions))
 
     plot_img_attributions(
         model=model,

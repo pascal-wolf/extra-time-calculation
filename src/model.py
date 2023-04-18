@@ -5,10 +5,12 @@ from tensorflow.keras.optimizers.legacy import Adam
 import tensorflow as tf
 from tensorflow.keras import models, layers
 
+from src.settings import Settings
 
-def create_model(input_shape):
+
+def create_model():
     model = models.Sequential()
-    model.add(layers.Conv2D(64, (6, 6), activation="relu", input_shape=input_shape))
+    model.add(layers.Conv2D(64, (6, 6), activation="relu", input_shape=Settings.input_shape))
     model.add(layers.MaxPooling2D((3, 3)))
     model.add(layers.Dropout(0.3))
     model.add(layers.Conv2D(64, (5, 5), activation="relu"))

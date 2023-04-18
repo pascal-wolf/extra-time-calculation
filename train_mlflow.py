@@ -1,5 +1,4 @@
 import argparse
-import configparser
 import logging
 from urllib.parse import urlparse
 
@@ -13,27 +12,10 @@ from sklearn.metrics import confusion_matrix
 from src.analysis import analyse_results
 from src.model import create_model
 from src.preprocess import create_generators
-from src.utils import get_number_of_files
+from src.settings import Settings
 
 
 def main(args):
-    height = int(config["DEFAULT"]["image_height"])
-    width = int(config["DEFAULT"]["image_width"])
-    dimensions = int(config["DEFAULT"]["image_dimensions"])  # 1 -> grayscale; 3 -> rgb
-    threshold = float(config["DEFAULT"]["threshold"])
-
-    input_shape = (height, width, dimensions)
-    batch_size = int(config["TRAINING"]["batch_size"])
-    epochs = int(config["TRAINING"]["epochs"])
-
-    train_images_path = str(config["TRAINING"]["train_images_path"])
-    val_images_path = str(config["TRAINING"]["val_images_path"])
-
-    number_of_training_images = get_number_of_files(train_images_path)
-    number_of_validation_images = get_number_of_files(val_images_path)
-
-    classes = config["TRAINING"]["classes"].split(",")
-    number_of_classes = len(classes)
 
     keras.autolog()
     train_generator, validation_generator = create_generators()
@@ -44,13 +26,13 @@ def main(args):
     # l1_ratio = float(sys.argv[2]) if len(sys.argv) > 2 else 0.5
 
     with mlflow.start_run():
-        model = create_model(input_shape)
+        model = create_model()
         logging.info("Model created ...")
 
         callback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=3)
         history = model.fit(
             train_generator,
-            epochs=epochs,
+            epochs=Settings.epochs,
             validation_data=validation_generator,
             use_multiprocessing=False,
             callbacks=[callback],
@@ -59,7 +41,7 @@ def main(args):
         # mlflow.log_figure(cm.figure_, 'test_confusion_matrix.png')
         logging.info("Predicting Validation data")
         predictions_proba = model.predict(validation_generator).flatten()
-        predictions = np.where(predictions_proba < threshold, 0, 1).flatten()
+        predictions = np.where(predictions_proba < Settings.threshold, 0, 1).flatten()
         y_true = validation_generator.classes.flatten()
 
         result_df = pd.DataFrame(
@@ -96,12 +78,10 @@ def main(args):
 
 
 if __name__ == "__main__":
-    config = configparser.ConfigParser()
-    config.read("config.ini")
 
-    logging.basicConfig(
-        format="%(levelname)s: %(message)s", level=str(config["LOGGING"]["log_level"])
-    )
+    logging.basicConfig(format="%(levelname)s: %(message)s",
+                        level=Settings.log_level)
+
     logging.info("Program started...")
 
     parser = argparse.ArgumentParser(description="Additional Time Prediction")
@@ -110,7 +90,7 @@ if __name__ == "__main__":
         type=bool,
         help="debug to specify, if wrongly classified images should be analyzed or not. Options (True | False)",
         choices=[True, False],
-        default=False,
+        default=True,
     )
     args = parser.parse_args()
 
