@@ -1,11 +1,4 @@
-import numpy as np
-
-
-from src.model_utils import (
-    load_model,
-    process_video,
-    load_video,
-)
+from src.model_utils import load_model, load_video, process_video
 
 
 def main():
