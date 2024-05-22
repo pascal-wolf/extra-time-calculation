@@ -13,12 +13,9 @@ def main():
     is_mobilenet = False
     scene = "Foulspiel"
 
-    model, np_name, config = load_model(is_cnn, is_mobilenet, scene)
+    model, _, config = load_model(is_cnn, is_mobilenet, scene)
     cap, fps = load_video(f"./data/one_game/Test_{scene}.mp4")
-    preds = process_video(cap, fps, model, config, is_cnn, is_mobilenet)
-
-    # Save your predictions to a numpy file
-    np.save(np_name, preds)
+    _ = process_video(cap, fps, model, config, is_cnn, is_mobilenet)
 
 
 if __name__ == "__main__":
