@@ -6,10 +6,10 @@ import mlflow
 import tensorflow as tf
 from keras import backend as K
 from mlflow.keras import autolog
-from tqdm import tqdm
 
 from src.model import create_cnn_model
 from src.preprocess import create_generators
+from tqdm import tqdm
 
 
 def perform_hyperparameter_training():

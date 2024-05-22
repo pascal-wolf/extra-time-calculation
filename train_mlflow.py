@@ -6,11 +6,7 @@ import mlflow
 import tensorflow as tf
 from mlflow.keras import autolog
 
-from src.model import (
-    create_cnn_model,
-    create_efficientnetvtwo_model,
-    create_mobilenet_model,
-)
+from src.model import create_cnn_model
 from src.preprocess import create_generators
 
 
