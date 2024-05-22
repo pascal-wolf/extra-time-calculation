@@ -2,7 +2,7 @@
 
 Intentional time-wasting and incorrect referee assessments can lead to shortened injury times in football, which can disadvantage clubs and cause economic damage.
 
-![Model Prediction Example](/images/foul_example_one.png)
+![Model Prediction Example](/images/foul_one.png)
 ![Explainability Example](/images/foul_explainability_two.png)
 
 As the videos are too large too upload on git, feel free to contact us here in case you are interested to get the demo video.
