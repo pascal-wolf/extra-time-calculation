@@ -5,6 +5,8 @@ Intentional time-wasting and incorrect referee assessments can lead to shortened
 ![Model Prediction Example](/images/foul_example_one.png)
 ![Explainability Example](/images/foul_explainability_two.png)
 
+As the videos are too large too upload on git, feel free to contact us here in case you are interested to get the demo video.
+
 ### Objective
 The aim of this work is to develop an appropriate algorithm using historical data and computer vision methods to predict the recommended injury time through automated detection.
 
