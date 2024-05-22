@@ -15,7 +15,7 @@ In the course of this work, a CNN model with subsequent binary classification wi
 
 
 ## Dataset
-12 videos of half-times (Bundesliga games) each with 45 minutes of video material will be used. Data from a Kaggle Challenge by the DFL will be used. These are manually labeled by us. [Link](https://www.kaggle.com/competitions/dfl-bundesliga-data-shootout/data) to the data.
+12 videos of half-times (Bundesliga games) each with 45 minutes of video material will be used. This project makes use of clips from the DFL - Bundesliga Data Shootout competition on Kaggle. These are manually labeled by us. [Link](https://www.kaggle.com/competitions/dfl-bundesliga-data-shootout/data) to the data.
 
 ## Usage
 
