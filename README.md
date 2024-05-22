@@ -15,7 +15,7 @@ In the course of this work, a CNN model with subsequent binary classification wi
 
 
 ## Dataset
-12 videos of half-times (Bundesliga games) each with 45 minutes of video material will be used. Data from a Kaggle Challenge by the DFL will be used. These will be manually labeled. [Link](https://www.kaggle.com/competitions/dfl-bundesliga-data-shootout/data) to the data.
+12 videos of half-times (Bundesliga games) each with 45 minutes of video material will be used. Data from a Kaggle Challenge by the DFL will be used. These are manually labeled by us. [Link](https://www.kaggle.com/competitions/dfl-bundesliga-data-shootout/data) to the data.
 
 ## Usage
 
@@ -28,12 +28,14 @@ pip install -r requirements.txt
 ```
 
 To run the classification model on existing data execute the following command in your terminal.
+Before running, you have to add a video of a football game in the data folder. Feel free to contact us here in case you are interested to get the demo video.
 
 ```bash
 python testing.py
 ```
 
 If you want to train a new model you have to run the training script, which uses MLFlow for the model tracking.
+Before running, you have to add a video of a football game in the data folder. Feel free to contact us here in case you are interested to get our processed training data.
 
 ```bash
 python train_mlflow.py
