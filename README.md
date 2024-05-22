@@ -1,4 +1,4 @@
-# Automated calculation of extra time in football games using Artificial Intelligence
+# Automated calculation of extra time in football games using CNN Classification
 
 Intentional time-wasting and incorrect referee assessments can lead to shortened injury times in football, which can disadvantage clubs and cause economic damage.
 
