@@ -1,13 +1,16 @@
 # Automated calculation of extra time in football games using Artificial Intelligence
 
-## Problem Statement
 Intentional time-wasting and incorrect referee assessments can lead to shortened injury times in football, which can disadvantage clubs and cause economic damage.
 
-## Objective
+![Model Prediction Example](/images/foul_example_one.png)
+![Explainability Example](/images/foul_explainability_two.png)
+
+### Objective
 The aim of this work is to develop an appropriate algorithm using historical data and computer vision methods to predict the recommended injury time through automated detection.
 
-## Methodology
-In the course of this work, a CNN model with subsequent binary classification will be used to predict whether play is happening in the current frame of the video or not. By summing up the predictions for each half, the injury time can then be indicated.
+### Method
+In the course of this work, a CNN model with subsequent binary classification will be used to predict whether play is happening in the current frame of the video or not. By summing up the predictions for each half, the injury time can then be indicated. We also intend to get an understanding based on which pixel the CNN model makes its prediction, as shown in one screenshot of our demo video above.
+
 
 ## Dataset
 12 videos of half-times (Bundesliga games) each with 45 minutes of video material will be used. Data from a Kaggle Challenge by the DFL will be used. These will be manually labeled. [Link](https://www.kaggle.com/competitions/dfl-bundesliga-data-shootout/data) to the data.
@@ -39,4 +42,3 @@ python train_mlflow.py
 
 - [@pascal-wolf](https://github.com/pascal-wolf)
 - [@nicolas-wolf](https://github.com/nicolas-wolf)
-
